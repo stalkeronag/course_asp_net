@@ -1,0 +1,9 @@
+﻿<h3>В списке @ViewBag.Tasks.Count задач:</h3>
+
+@foreach (TaskModel task in ViewBag.Tasks)
+{
+    <h3>Заголовок задачи</h3>
+    <p>@task.Title</p>
+    <h3>Описание задачи</h3>
+    <p>@task.Description</p>
+}
