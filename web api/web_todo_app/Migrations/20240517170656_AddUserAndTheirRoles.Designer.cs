@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Data;
@@ -11,9 +12,11 @@ using WebApi.Data;
 namespace web_todo_app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240517170656_AddUserAndTheirRoles")]
+    partial class AddUserAndTheirRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,98 +131,24 @@ namespace web_todo_app.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WebApi.Models.FingerPrint", b =>
+            modelBuilder.Entity("web_todo_app.Models.TaskModel", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("Hash")
+                    b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Referer")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RefreshTokenSessionConnectionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserAgent")
+                    b.Property<string>("Title")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RefreshTokenSessionConnectionId")
-                        .IsUnique();
-
-                    b.ToTable("FingerPrints");
+                    b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("WebApi.Models.RefreshToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("RefreshTokenSessionConnectionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Token")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RefreshTokenSessionConnectionId")
-                        .IsUnique();
-
-                    b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSession", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokenSessions");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSessionConnection", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RefreshTokenSessionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RefreshTokenSessionId");
-
-                    b.ToTable("RefreshTokenSessionConnections");
-                });
-
-            modelBuilder.Entity("WebApi.Models.User", b =>
+            modelBuilder.Entity("web_todo_app.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -283,7 +212,7 @@ namespace web_todo_app.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebApi.Models.UserRole", b =>
+            modelBuilder.Entity("web_todo_app.Models.UserRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -309,26 +238,9 @@ namespace web_todo_app.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("web_todo_app.Models.TaskModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tasks");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("WebApi.Models.UserRole", null)
+                    b.HasOne("web_todo_app.Models.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,7 +249,7 @@ namespace web_todo_app.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("WebApi.Models.User", null)
+                    b.HasOne("web_todo_app.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -346,7 +258,7 @@ namespace web_todo_app.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("WebApi.Models.User", null)
+                    b.HasOne("web_todo_app.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -355,13 +267,13 @@ namespace web_todo_app.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("WebApi.Models.UserRole", null)
+                    b.HasOne("web_todo_app.Models.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApi.Models.User", null)
+                    b.HasOne("web_todo_app.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -370,67 +282,11 @@ namespace web_todo_app.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("WebApi.Models.User", null)
+                    b.HasOne("web_todo_app.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApi.Models.FingerPrint", b =>
-                {
-                    b.HasOne("WebApi.Models.RefreshTokenSessionConnection", "Connection")
-                        .WithOne("FingerPrint")
-                        .HasForeignKey("WebApi.Models.FingerPrint", "RefreshTokenSessionConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Connection");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshToken", b =>
-                {
-                    b.HasOne("WebApi.Models.RefreshTokenSessionConnection", "Connection")
-                        .WithOne("RefreshToken")
-                        .HasForeignKey("WebApi.Models.RefreshToken", "RefreshTokenSessionConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Connection");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSession", b =>
-                {
-                    b.HasOne("WebApi.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSessionConnection", b =>
-                {
-                    b.HasOne("WebApi.Models.RefreshTokenSession", "RefreshTokenSession")
-                        .WithMany("Connections")
-                        .HasForeignKey("RefreshTokenSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RefreshTokenSession");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSession", b =>
-                {
-                    b.Navigation("Connections");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RefreshTokenSessionConnection", b =>
-                {
-                    b.Navigation("FingerPrint");
-
-                    b.Navigation("RefreshToken");
                 });
 #pragma warning restore 612, 618
         }

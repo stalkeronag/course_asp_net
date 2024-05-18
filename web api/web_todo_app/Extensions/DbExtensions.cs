@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using web_todo_app.Data;
+using web_todo_app.Models;
+using WebApi.Data;
+using WebApi.Models;
 
 namespace web_todo_app.Extensions
 {
@@ -14,6 +16,7 @@ namespace web_todo_app.Extensions
                 options.UseNpgsql(connectionStringBuilder.ConnectionString);
             });
 
+            services.AddIdentity<User, UserRole>().AddEntityFrameworkStores<AppDbContext>();
         }
     }
 }

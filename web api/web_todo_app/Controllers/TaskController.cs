@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using web_todo_app.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using web_todo_app.Dto;
 using web_todo_app.Models;
+using WebApi.Data;
 
 namespace web_todo_app.Controllers
 {
@@ -14,7 +16,9 @@ namespace web_todo_app.Controllers
             this.context = context;
         }
 
+        [Authorize]
         [HttpGet("GetTaskById")]
+        
         public IActionResult GetTaskById(string id)
         {
             var task = context.Tasks.Where(task => task.Id.Equals(id)).FirstOrDefault();
@@ -23,6 +27,7 @@ namespace web_todo_app.Controllers
             return View();
         }
 
+        [Authorize]
         [HttpGet("GetAllTasks")]
         public IActionResult GetAllTasks()
         {
@@ -32,16 +37,18 @@ namespace web_todo_app.Controllers
             return View();
         }
 
+        [Authorize]
         [HttpPost("AddTask")]
-        public async Task<IActionResult> AddTask(string title, string description)
+        public async Task<IActionResult> AddTask([FromBody] AddTaskDto addTaskDto)
         {
-            var addTask = new TaskModel { Title = title, Description = description };
+            var addTask = new TaskModel { Title = addTaskDto.Title, Description = addTaskDto.Description };
             context.Tasks.Add(addTask);
             await context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpPost("RemoveTask")]
+        [Authorize(Roles="Admin")]
         public async Task<IActionResult> RemoveTaskById(string id)
         {
             var task = context.Tasks.Where(task => task.Id.Equals(id)).FirstOrDefault();
