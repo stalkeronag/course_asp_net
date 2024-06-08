@@ -18,7 +18,7 @@ namespace WebApi.Services.Implementations
             
         }
 
-        public async void AddRole(string roleName)
+        public async Task AddRole(string roleName)
         {
             await roleManager.CreateAsync(new UserRole()
             {

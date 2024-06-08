@@ -1,0 +1,122 @@
+﻿version: '3.4'
+
+services:
+  dotnet-postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "study"
+      POSTGRES_USER: "student"
+      POSTGRES_PASSWORD: "123"
+    ports:
+      - "5433:5432"
+    networks:
+      - opensearch-net
+  dotnet-web:
+    image: dotnet-web
+    restart: always
+    environment:
+       ConnectionStrings:PostgreSql: "Server=dotnet-postgres;Port=5432;Database=study;Username=student;Password=123"
+    build:
+      context: .
+      dockerfile: ./web_todo_app/Dockerfile
+    ports:
+      - "5100:8080"
+      - "5101:8081"
+    volumes:
+      - ./FilesUsers:/FilesUsers:rw
+    depends_on:
+      - dotnet-postgres
+      - rabbitmq
+    networks:
+      - opensearch-net
+  opensearch-node1:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - discovery.seed_hosts=opensearch-node1
+      - cluster.initial_cluster_manager_nodes=opensearch-node1
+      - bootstrap.memory_lock=true  # along with the memlock settings below, disables swapping
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m  # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536  # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600  # required for Performance Analyzer
+    expose:
+      - "9500"
+    networks:
+      - opensearch-net
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+       OPENSEARCH_HOSTS: '["http://opensearch-node1:9200"]'
+       DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true" # disables security dashboards plugin in OpenSearch Dashboards
+    networks:
+      - opensearch-net
+  redis:
+    image: redis:latest
+    container_name: redis_node
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data-volume:/root/redis
+      - redis.conf-volume:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=secret
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - opensearch-net
+  rabbitmq:
+    image: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/mnesia
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - opensearch-net
+  service-senderemail:
+    image: service-senderemail
+    restart: always
+    build:
+      context: .
+      dockerfile: ./SenderEmail/Dockerfile
+    ports:
+      - "5221:8080"
+    networks:
+      - opensearch-net
+    depends_on:
+      - rabbitmq
+      - dotnet-web
+
+volumes:
+  opensearch-data1:
+  redis-data-volume:
+  redis.conf-volume:
+  rabbitmq:
+
+networks:
+  opensearch-net:

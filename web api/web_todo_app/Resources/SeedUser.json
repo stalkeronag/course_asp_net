@@ -1,0 +1,40 @@
+﻿{
+  "users": [
+    {
+      "Password": "test1234",
+      "Email": "testgmail.com",
+      "UserName": "kostya",
+      "Role": "admin"
+    },
+    {
+      "Password": "carcat",
+      "Email": "hehehagmail.com",
+      "UserName": "nastya",
+      "Role": "user"
+    },
+    {
+      "Password": "mydogis",
+      "Email": "popovgmail.com",
+      "UserName": "niketa",
+      "Role": "user"
+    },
+    {
+      "Password": "rutata",
+      "Email": "gorilocgmail.com",
+      "UserName": "tatima",
+      "Role": "user"
+    },
+    {
+      "Password": "test1234235",
+      "Email": "ziparchivegmail.com",
+      "UserName": "rikob",
+      "Role": "user"
+    },
+    {
+      "Password": "qwerty1234",
+      "Email": "loctarogargmail.com",
+      "UserName": "salo",
+      "Role": "admin"
+    }
+  ]
+}

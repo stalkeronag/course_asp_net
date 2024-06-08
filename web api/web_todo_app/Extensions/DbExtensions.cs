@@ -10,6 +10,7 @@ namespace web_todo_app.Extensions
     {
         public static void ConfigureEntityFramework(this IServiceCollection services, IConfiguration configuration)
         {
+
             var connectionStringBuilder = new NpgsqlConnectionStringBuilder(configuration["ConnectionStrings:PostgreSql"]);
             services.AddDbContext<AppDbContext>(options =>
             {

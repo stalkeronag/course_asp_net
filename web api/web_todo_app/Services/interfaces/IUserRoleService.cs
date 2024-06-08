@@ -4,7 +4,7 @@ namespace WebApi.Services.Interfaces
 {
     public interface IUserRoleService
     {
-        public void AddRole(string roleName);
+        public Task AddRole(string roleName);
 
         public IEnumerable<UserRole> GetRolesByUserId(string userId);
     }

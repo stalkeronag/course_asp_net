@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web_todo_app.Dto;
 using web_todo_app.Exceptions;
+using web_todo_app.Services.interfaces;
 using WebApi.Exceptions;
 using WebApi.Models;
 using WebApi.Services.Interfaces;
@@ -34,7 +35,7 @@ namespace web_todo_app.Controllers
 
         private IRefreshTokenSessionConnectionBuilder connectionBuilderService;
 
-
+        private IUserCacheService userCacheService;
         public AuthController(IUserService userService,
             ITokenService tokenService,
             IUserRoleService roleService,
@@ -45,7 +46,8 @@ namespace web_todo_app.Controllers
             IFingerprintService fingerprintService,
             IRefreshTokenSessionBuilderService refreshTokenSessionBuilderService,
             ITokenManagerService tokenManagerService,
-            IRefreshTokenSessionConnectionBuilder tokenSessionConnectionBuilder)
+            IRefreshTokenSessionConnectionBuilder tokenSessionConnectionBuilder,
+            IUserCacheService userCacheService)
         {
             this.userService = userService;
             this.tokenService = tokenService;
@@ -58,6 +60,7 @@ namespace web_todo_app.Controllers
             this.tokenManagerService = tokenManagerService;
             this.connectionBuilderService = tokenSessionConnectionBuilder;
             this.logger = logger;
+            this.userCacheService = userCacheService;
         }
 
         [HttpPost("Login")]
@@ -79,6 +82,7 @@ namespace web_todo_app.Controllers
                 tokenManagerService.SetRefreshToken(refreshToken);
                 tokenManagerService.SetAccessToken(accessToken);
                 logger.LogInformation("login successfull");
+                await userCacheService.CacheUser(currentUser);
                 return Ok();
             }
             catch (UserNotFoundException userNotFound)
@@ -114,6 +118,7 @@ namespace web_todo_app.Controllers
             {
                 logger.LogInformation(userNotFound.Message + "continue register user by email {Email}", registerDto.Email);
                 var user = mapper.Map<User>(registerDto);
+                await userCacheService.CacheUser(user);
                 await userService.AddUser(user, registerDto.Password);
                 logger.LogInformation("registerUser by email {Email}", registerDto.Email);
                 return Ok();   

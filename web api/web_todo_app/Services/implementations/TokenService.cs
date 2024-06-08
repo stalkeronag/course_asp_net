@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
+﻿using IdentityModel;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -28,16 +29,18 @@ namespace WebApi.Services.Implementations
         public string GenerateAccessToken(User user, UserRole role)
         {
             var date = DateTime.Now;
-            var userClaims = new List<Claim>();
-            userClaims.Add(new Claim("user_id", user.Id));
-            userClaims.Add(new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Name, user.UserName));
-            userClaims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name));
+            var userClaims = new List<Claim>
+            {
+                new Claim("user_id", user.Id),
+                new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Name, user.UserName),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name)
+            };
             var jwt = new JwtSecurityToken(
-                issuer: configuration["Jwt:ValidIssuer"],
-                audience: configuration["Jwt:ValidAudience"],
+                issuer: configuration["JWT:ValidIssuer"],
+                audience: configuration["JWT:ValidAudience"],
                 claims: userClaims,
                 expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256)
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"])), SecurityAlgorithms.HmacSha256)
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);

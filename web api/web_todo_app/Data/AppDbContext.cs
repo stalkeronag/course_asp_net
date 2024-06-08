@@ -8,6 +8,8 @@ namespace WebApi.Data
     public class AppDbContext : IdentityDbContext<User, UserRole, string>
     {
         public DbSet<TaskModel> Tasks { get; set; }
+
+        public DbSet<FileModel> Files { get; set; }
         public DbSet<RefreshTokenSession> RefreshTokenSessions { get; set; }
 
         public DbSet<RefreshTokenSessionConnection> RefreshTokenSessionConnections  { get; set; }

@@ -13,7 +13,7 @@ namespace WebApi.Services.Interfaces
 
         public Task<User> GetUserById(string id);
 
-        public Task AddUser(User user, string password);
+        public Task AddUser(User user, string password, string role = "user");
 
         public Task UpdateUserById(string id);
 

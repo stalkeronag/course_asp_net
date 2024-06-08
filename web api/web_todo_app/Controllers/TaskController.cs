@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using web_todo_app.Dto;
 using web_todo_app.Models;
 using WebApi.Data;
@@ -11,9 +12,12 @@ namespace web_todo_app.Controllers
     {
         private readonly AppDbContext context;
 
-        public TaskController(AppDbContext context)
+        private readonly ILogger<TaskController> logger;
+
+        public TaskController(AppDbContext context, ILogger<TaskController> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
         [Authorize]
@@ -21,16 +25,23 @@ namespace web_todo_app.Controllers
         
         public IActionResult GetTaskById(string id)
         {
+            
+            
             var task = context.Tasks.Where(task => task.Id.Equals(id)).FirstOrDefault();
             ViewBag.TaskId = id;
             ViewBag.Task = task;
             return View();
         }
 
-        [Authorize]
+        [Authorize(Policy = "IsAdmin")]
         [HttpGet("GetAllTasks")]
         public IActionResult GetAllTasks()
         {
+            var claims = User.Claims;
+            foreach (var claim in claims)
+            {
+                logger.LogInformation(claim.ToString());
+            }
             var tasks = context.Tasks;
             ViewBag.Tasks = tasks.ToList();
 
@@ -48,7 +59,7 @@ namespace web_todo_app.Controllers
         }
 
         [HttpPost("RemoveTask")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Policy="IsAdmin")]
         public async Task<IActionResult> RemoveTaskById(string id)
         {
             var task = context.Tasks.Where(task => task.Id.Equals(id)).FirstOrDefault();

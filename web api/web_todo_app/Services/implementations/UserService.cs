@@ -32,14 +32,14 @@ namespace WebApi.Services.Implementations
             } 
         }
 
-        public async Task AddUser(User user, string password)
+        public async Task AddUser(User user, string password, string role = "user")
         {
             string hashPass = userManager.PasswordHasher.HashPassword(user, password);
             user.PasswordHash = hashPass;
             await userManager.CreateAsync(user);
             await context.SaveChangesAsync();
             var currentUser = await userManager.FindByEmailAsync(user.Email);
-            await AddRoleInUserById(currentUser.Id);   
+            await AddRoleInUserById(currentUser.Id, role);   
         }
 
         public async Task DeleteUserById(string id)

@@ -309,6 +309,26 @@ namespace web_todo_app.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("web_todo_app.Models.FileModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GeneratedName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelativePath")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files");
+                });
+
             modelBuilder.Entity("web_todo_app.Models.TaskModel", b =>
                 {
                     b.Property<string>("Id")
